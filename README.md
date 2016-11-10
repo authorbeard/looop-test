@@ -1,1 +1,1 @@
-# looop-test
+This coding challenge was completed for Looop technologies. It uses Node and d3 to make API calls and chart the data for entries for one day in 15-minute intervals, overlaid with the same data from a week before. 
