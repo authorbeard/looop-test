@@ -18,9 +18,7 @@
   },
   "homepage": "https://github.com/authorbeard/looop-test#readme",
   "dependencies": {
-    "express": "^4.14.0",
-    "faker": "^3.1.0",
-    "request": "^2.78.0"
+    "express": "^4.14.0"
   },
   "devDependencies": {
     "grunt": "^1.0.1"

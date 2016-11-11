@@ -7,7 +7,6 @@ function generateData(dayObject){
   intervals.map(function(e,i,arry){ 
     arry[i] = Math.floor(Math.random() * 50);
   })
-
   var day = [];
   var totAct = 0
   intervals.forEach(function(e,i, arry){
@@ -15,7 +14,7 @@ function generateData(dayObject){
     var increment = {
       "id": null, 
       "fw_count": e,
-      "t": new Date(dayObject.getTime() + (e*300000)),
+      "t": new Date(dayObject.getTime() + (i*300000)).toString(),
       "total_activity": totAct,
     } 
     day.push(increment);   
@@ -23,6 +22,7 @@ function generateData(dayObject){
   return day; 
 };
 
+module.exports=generateData
 
 
 // var intervals = [...Array(24)]

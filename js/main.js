@@ -1,9 +1,9 @@
 
 $(document).ready(function(){
 
-  var chart=fetchData();
+  var chartData=fetchData();
   debugger;
-  console.log(chart)
+  console.log(chartData)
 
 
 
@@ -11,20 +11,23 @@ $(document).ready(function(){
 
 
 function fetchData(){
-  $.get('looop/', function(data){
-    debugger;
-  }).done(function(){
-    debugger;
+
+  $.get('looop/', function(){
+  }).done(function(data){
+    parseData(data);
   })
-  return rawData;
+  // return rawData;
 }
 
 function parseData(raw){
-  while(raw.length() > 0){
+  debugger;
+  var today = raw.fDay
+  var lastWk = raw.pDay
+  while(today.length > 0){
     var d = new Day();
     var inc=raw.slice(0,3);
     inc.forEach(function(e,i,inc){
-
+debugger;
     })
   }
   debugger;
