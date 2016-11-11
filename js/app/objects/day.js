@@ -1,3 +1,0 @@
-function Day(){
-  this.data = {}
-  }

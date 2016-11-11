@@ -1,8 +1,13 @@
-var firstDay = new Date(2016, 10, 7)
-var weekPrior = new Date(2016, 9, 31)
+
+function generateData(){
+  return {
+    "thisDay": generateDay(new Date(2016, 10, 7)),
+    "lastWk": generateDay(new Date(2016, 9, 31))
+  }
+};
 
 
-function generateData(dayObject){
+function generateDay(dayObject){
   var intervals = [...Array(24)]
   intervals.map(function(e,i,arry){ 
     arry[i] = Math.floor(Math.random() * 50);
@@ -20,7 +25,8 @@ function generateData(dayObject){
     day.push(increment);   
   })
   return day; 
-};
+}
+
 
 module.exports=generateData
 

@@ -1,5 +1,4 @@
-function Day(time, entrances, headcount){
-  this.time = time;
-  this.entrances = entrances;
-  this.headcount = headcount;
+function Day(name){
+  this.name = name;
+  // this.data = {};
 }
