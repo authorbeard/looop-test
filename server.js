@@ -1,16 +1,25 @@
 var express = require('express');
 var app = express();
 var request = require('request');
+var faker = require('faker');
 
 app.use(express.static(__dirname));
 
-app.listen(8080);
+
 
 app.get('looop/', function (req, res) {
-  request('http://sensor-checkin-service.api.looop.in/test-dashboard-activity', function (error, response, body) {
-    res.json(JSON.parse(body));
+  debugger;
+    return {
+      firstDay.toString(): {
+        generateData(firstDay);
+      },
+      weekPrior.toString(): {
+        generateData(weekPrior),
+      }
+    }
   })
 });
 
+app.listen(8080);
 
 console.log('Server started at http://localhost:8080');
