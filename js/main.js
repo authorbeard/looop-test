@@ -1,7 +1,11 @@
 
+
 $(document).ready(function(){
 
   fetchData();
+  helloChart();
+  svgTest();
+
 
 })
 
@@ -11,14 +15,8 @@ function fetchData(){
   $.get('looop/', function(){
   }).done(function(resp){
     
-    drawChart(parseData(resp.data));
+    // drawChart(parseData(resp.data));
   })
 
 }
 
-function drawChart(dayArray){
-  debugger;
-
-
-
-}

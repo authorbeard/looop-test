@@ -29,17 +29,3 @@ function generateDay(dayObject){
 
 
 module.exports=generateData
-
-
-// var intervals = [...Array(24)]
-// intervals.map(function(e,i,arry){ 
-//   arry[i] = Math.floor(Math.random() * 50);
-// })
-// console.log(intervals)
-
-// {
-// "id": null,
-// "fw_count": [How many people came in during the last 5 minutes],
-// "t": [Timestamp]
-// "total_activity": [Head count for the last 5 minutes]
-// }
