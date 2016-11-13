@@ -1,6 +1,10 @@
 
 function drawChart(dayArray){
+
   var data = dayArray;
+  data.forEach(function(d){
+    d.time = new Date(d.time)
+  })
 
     var chart = d3.select('.chart')
         margin = {top: 20, right: 20, bottom: 40, left: 50}
@@ -12,19 +16,23 @@ function drawChart(dayArray){
 
     var line = d3.line()
       .curve(d3.curveBasis)
-      .x(function(d) { return xScale(new Date(d.time)); })
-      .y(function(d) { return yScale(d.entries); });
+      .x(function(d) { return xScale(d.time); })
+      .y(function(d) { return yScale(d.entrances); });
   //2. set x and y axis scales
   //will prob need to be updated when data's sorted
-    debugger;
     var xScale = d3.scaleTime()
-        .domain(d3.extent(data, function(d){return new Date(d.time)}))
+        .domain(d3.extent(data, function(d){ return d.time }))
         .rangeRound([0, width]);
 
     var yScale = d3.scaleLinear()
-        .domain(d3.extent(data, function(d){return d.entries}))
+        .domain(d3.extent(data, function(d){return d.entrances}))
         .rangeRound([height, 0]);
 
+    var area = d3.area()
+        .curve(d3.curveBasis)
+        .x(function(d){ return xScale(d.time)})
+        .y0(height)
+        .y1(function(d){ return yScale(d.entrances) });
   //3. select chart container (it's already marked as svg in index.html)
     chart
         .attr("width", width)
@@ -50,13 +58,21 @@ function drawChart(dayArray){
         .text("Entrances");
 
     g.append("path")
-        .datum(data, function(d){return d.entrances})
+        .data([data])
         .attr("class", "line")
         .attr("d", line);
 
+    g.append("path")
+        .data([data])
+        .attr("class", "area")
+        .attr("opacity", ".5")
+        .attr("d", area)
+        .attr("style", "fill: #" + d3.timeFormat("%m%d%y")(data[0].time));
+
 }
 
 
-function timeElapsed(array){
-  return (array[array.length-1].time - array[0].time )/60000;  
-}
+
+// function timeElapsed(array){
+//   return (array[array.length-1].time - array[0].time )/60000;  
+// }

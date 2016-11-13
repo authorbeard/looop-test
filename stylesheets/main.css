@@ -19,3 +19,24 @@
   stroke: #000;
   shape-rendering: crispEdges;
 }
+
+.line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 1px;
+  }
+
+.area {
+    fill: lightsteelblue;
+    stroke-width: 0;
+  }
+
+.area.two {
+  fill: green;
+}
+
+
+
+
+
+

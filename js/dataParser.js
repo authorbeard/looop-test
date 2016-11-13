@@ -7,11 +7,11 @@ function parseData(raw){
       while (e.length > 0){
         var increment = e.splice(0,3);
         var timestamp = increment[2].t;
-        var entries=calcEntry(increment);
+        var entrances=calcEntrances(increment);
         var headcount=increment[2].total_activity;
         day["data"].push(
           {"time": timestamp,
-          "entries": entries,
+          "entrances": entrances,
           "headcount": headcount
           }
         )
@@ -26,7 +26,7 @@ function extractDate(num){
   return new Date(num.t).toDateString();  
 }
 
-function calcEntry(arr){
+function calcEntrances(arr){
   return arr.map(function(e){
     return e.fw_count
   }).reduce(function(a,b){
