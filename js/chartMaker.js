@@ -1,58 +1,95 @@
 
-
-function helloChart(){
-  var w=960, h=50,
-  svg=d3.select(".chart")
-    .append("svg")
-    .attr("width", w)
-    .attr("height", h);
-
-  var text=svg
-    .append("text")
-    .text("hello world")
-    .attr("y", 50);
-  }
-
-
 function drawChart(dayArray){
-  // debugger;
+  var data = dayArray;
 
-  // var data = [4,8,15,16,23,42]
-  // d3.select(".chart")
-  //   .selectAll("div")
-  //     .data(data)
-  // .enter().append("div")
-  //   .style("width", function(d) { return d * 10 + "px"; })
-  //   .text(function(d) { return d; });
+  var maxEntry = d3.max(data, function(d){
+    return d.entries;
+  })
 
+  var maxTime = d3.max(data, function(d){
+    return d.time;
+  })
+
+  var maxHeadCt = d3.max(data, function(d){
+    return d.headcount;
+  })
+
+  //1. set the properties of the chart
+  //chosen based on landscape view of iPhone 6
+    var margin = {top: 0, right: 0, bottom: 40, left: 40}
+        height = 600,
+        width = 600 - margin.top - margin.bottom;
+  //2. set x and y axis scales
+  //will prob need to be updated when data's sorted
+    debugger;
+    var xScale = d3.scaleLinear()
+        .domain([0, maxTime])
+        .range([0, width]);
+
+    var yScale = d3.scaleLinear()
+        .domain([0, maxEntry])
+        .range([height, 0]);
+  //3. select chart container (it's already marked as svg in index.html)
+    var chart = d3.select(".chart")
+        .attr("width", width)
+        .attr("heigh", height);
+  //4. set up data points
+    /*
+    -- set up data join
+    -- set up formula for setting locations
+    -- also define color, use transparency attr
+       (so last wk is visible underneath)
+    -- QUESTION: define line, colored area below line, here?
+    */
+
+  //5. package each entry object into a hover box
+   /*
+    -- current best guess: append an element (rect?)
+       then set visibility to hidden, 
+       then set an on-hover attribute
+   */
+
+   //6. define x axis
+   // below is from the '13 tutorial. check for v4 chgs if hit bugs
+    var xAxis = d3.axisBottom(xScale)
+        .ticks(data[0].time, maxTime, data.length);
+
+    chart.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis)
+      .append("text")
+        .text("Time");
+
+    var yAxis = d3.axisLeft(yScale)
+        .ticks(0, maxEntry, data.length);
+
+    chart.append("g")
+        .attr("class", "y axis")
+        // .attr("transform", "translate(0,0)")
+        .call(yAxis)
+      .append("text")
+        .text("Entrances");
 
 }
 
-function svgTest(){
-  var data = [4,8,15,16,23,42]
-  var width = 420,
-        barHeight = 20;
-debugger;
-  var x = d3.scaleLinear()
-      .domain([0, d3.max(data)])
-      .range([0, width]);
 
-  var chart = d3.select(".chart")
-      .attr("width", width)
-      .attr("height", barHeight);
+//   var chart = d3.select(".chart")
+//       .attr("width", width)
+//       .attr("height", barHeight);
 
-  var bar = chart.selectAll("g")
-      .data(data)
-    .enter().append("g")
-      .attr("transform", function(d,i){ return "translate(0, " + i*barHeight + ")"});
+//   var bar = chart.selectAll("g")
+//       .data(data)
+//     .enter().append("g")
+//       .attr("transform", function(d,i){ return "translate(0, " + (i*barHeight) + ")"});
 
-  bar.append("rect")
-      .attr("width", x)
-      .attr("height", barHeight);
+//   bar.append("rect")
+//       .attr("width", x)
+//       .attr("height", barHeight);
 
-  bar.append("text")
-      .attr("x", function(d){ return x(d) -3 })
-      .attr("y", barHeight/2)
-      .attr("dy", ".35em")
-      .text(function(d){ return d; });
-}
+//   bar.append("text")
+//       .attr("x", function(d){ return x(d) - 3; })
+//       .attr("y", barHeight/2)
+//       .attr("dy", ".35em")
+//       .text(function(d){ return d; });
+// }

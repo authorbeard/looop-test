@@ -1,17 +1,20 @@
 function parseData(raw){
   var days=[raw.thisDay, raw.lastWk]
+
   days.map(function(e,i,arr){
-    var day = new Day(e[0].t.split(" ").slice(1,3).join(""))
-      day["data"]={}
+    var day = new Day(extractDate(e[0]))
+      day["data"]=[]
       while (e.length > 0){
         var increment = e.splice(0,3);
-        var timestamp = setTime(increment[2]);
+        var timestamp = increment[2].t;
         var entries=calcEntry(increment);
         var headcount=increment[2].total_activity;
-        day["data"][timestamp]={
-          "entries": entries, 
+        day["data"].push(
+          {"time": timestamp,
+          "entries": entries,
           "headcount": headcount
-        }
+          }
+        )
 
       }
       arr[i]=day;
@@ -19,8 +22,8 @@ function parseData(raw){
   return days; 
 }
 
-function setTime(obj){
-  return new Date(obj.t).toTimeString();
+function extractDate(num){
+  return new Date(num.t).toDateString();  
 }
 
 function calcEntry(arr){

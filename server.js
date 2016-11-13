@@ -2,9 +2,7 @@ var express = require('express');
 var app = express();
 var mock = require('./js/mockData');
 var sass = require('node-sass');
-var result = sass.renderSync({
-  file: './stylesheets/main.scss'
-})
+
 
 app.use(express.static(__dirname));
 
