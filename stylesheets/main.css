@@ -14,8 +14,8 @@
   font: 10px sans-serif;
 }
 
-.axis path, .axis line {
-  fill: none;
+.axis {
+  fill: black;
   stroke: #000;
   shape-rendering: crispEdges;
 }

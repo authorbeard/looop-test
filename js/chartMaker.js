@@ -2,94 +2,61 @@
 function drawChart(dayArray){
   var data = dayArray;
 
-  var maxEntry = d3.max(data, function(d){
-    return d.entries;
-  })
+    var chart = d3.select('.chart')
+        margin = {top: 20, right: 20, bottom: 40, left: 50}
+        height = 500 - margin.top - margin.bottom,
+        width = 960 - margin.left - margin.right;
+        g = chart.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
-  var maxTime = d3.max(data, function(d){
-    return d.time;
-  })
+    // var increment = d3.timeParse("%H:%M")
 
-  var maxHeadCt = d3.max(data, function(d){
-    return d.headcount;
-  })
-
-  //1. set the properties of the chart
-  //chosen based on landscape view of iPhone 6
-    var margin = {top: 0, right: 0, bottom: 40, left: 40}
-        height = 600,
-        width = 600 - margin.top - margin.bottom;
+    var line = d3.line()
+      .curve(d3.curveBasis)
+      .x(function(d) { return xScale(new Date(d.time)); })
+      .y(function(d) { return yScale(d.entries); });
   //2. set x and y axis scales
   //will prob need to be updated when data's sorted
     debugger;
-    var xScale = d3.scaleLinear()
-        .domain([0, maxTime])
-        .range([0, width]);
+    var xScale = d3.scaleTime()
+        .domain(d3.extent(data, function(d){return new Date(d.time)}))
+        .rangeRound([0, width]);
 
     var yScale = d3.scaleLinear()
-        .domain([0, maxEntry])
-        .range([height, 0]);
+        .domain(d3.extent(data, function(d){return d.entries}))
+        .rangeRound([height, 0]);
+
   //3. select chart container (it's already marked as svg in index.html)
-    var chart = d3.select(".chart")
+    chart
         .attr("width", width)
-        .attr("heigh", height);
-  //4. set up data points
-    /*
-    -- set up data join
-    -- set up formula for setting locations
-    -- also define color, use transparency attr
-       (so last wk is visible underneath)
-    -- QUESTION: define line, colored area below line, here?
-    */
+        .attr("height", height)
+        .attr("overflow", "visible");
 
-  //5. package each entry object into a hover box
-   /*
-    -- current best guess: append an element (rect?)
-       then set visibility to hidden, 
-       then set an on-hover attribute
-   */
-
-   //6. define x axis
-   // below is from the '13 tutorial. check for v4 chgs if hit bugs
-    var xAxis = d3.axisBottom(xScale)
-        .ticks(data[0].time, maxTime, data.length);
-
-    chart.append("g")
-        .attr("class", "x axis")
+    g.append("g")
+        .attr("class", "axis x")
         .attr("transform", "translate(0," + height + ")")
-        .call(xAxis)
+        .call(d3.axisBottom(xScale))
       .append("text")
         .text("Time");
 
-    var yAxis = d3.axisLeft(yScale)
-        .ticks(0, maxEntry, data.length);
-
-    chart.append("g")
-        .attr("class", "y axis")
-        // .attr("transform", "translate(0,0)")
-        .call(yAxis)
+    g.append("g")
+        .attr("class", "axis y")
+        .call(d3.axisLeft(yScale))
       .append("text")
+        .attr("fill", "#000")
+        .attr("transform", "rotate(-90)")
+        .attr("y", -40)
+        .attr("x", (height/2)*-1)
+        .style("text-anchor", "middle")
         .text("Entrances");
+
+    g.append("path")
+        .datum(data, function(d){return d.entrances})
+        .attr("class", "line")
+        .attr("d", line);
 
 }
 
 
-//   var chart = d3.select(".chart")
-//       .attr("width", width)
-//       .attr("height", barHeight);
-
-//   var bar = chart.selectAll("g")
-//       .data(data)
-//     .enter().append("g")
-//       .attr("transform", function(d,i){ return "translate(0, " + (i*barHeight) + ")"});
-
-//   bar.append("rect")
-//       .attr("width", x)
-//       .attr("height", barHeight);
-
-//   bar.append("text")
-//       .attr("x", function(d){ return x(d) - 3; })
-//       .attr("y", barHeight/2)
-//       .attr("dy", ".35em")
-//       .text(function(d){ return d; });
-// }
+function timeElapsed(array){
+  return (array[array.length-1].time - array[0].time )/60000;  
+}
