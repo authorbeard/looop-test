@@ -4,7 +4,8 @@ function drawChart(dayArray){
   var raw = dayArray.reverse();
 //Setting variables to be used throughout
     var fillParse=d3.timeFormat("%m%d%y")
-    var opParse=d3.timeFormat("%U")
+        opParse=d3.timeFormat("%U")
+        isectDate = d3.bisector(function(d) { return d.time; }).left;
 
     var chart = d3.select('.chart')    
         .attr("width", width)
@@ -60,105 +61,35 @@ function drawChart(dayArray){
           .attr("style", "font-size: 18")
           .text("Entrances");
 
-/////////////////////////////////////////////
-//// MOUSEOVER EVENT --FIRST DATASET ONLY ///
-////////////////////////////////////////////
-      var mouseG = chart.append("g")
-        .attr("class", "mouse-over-effects");
+      var focus = chart.append("g")
+          .attr("class", "focus")
+          .style("display", "none");
 
-      // this is the vertical line
-      mouseG.append("path")
-        .attr("class", "mouse-line")
-        .style("stroke", "black")
-        .style("stroke-width", "1px")
-        .style("opacity", "0");
+      focus.append("circle")
+          .attr("r", 4.5);
 
-      // keep a reference to all our lines
-      var lines = document.getElementsByClassName('line');
+      focus.append("text")
+          .attr("x", 9)
+          .attr("dy", ".35em");
 
-      // here's a g for each circle and text on the line
-      var mousePerLine = mouseG.selectAll('.mouse-per-line')
-        .data(data)
-        .enter()
-        .append("g")
-        .attr("class", "mouse-per-line");
+      g.append("rect")
+          .attr("class", "overlay")
+          .attr("fill", "none")
+          .attr("width", width)
+          .attr("height", height)
+          .on("mouseover", function() { focus.style("display", null); })
+          .on("mouseout", function() { focus.style("display", "none"); })
+          .on("mousemove", mousemove);
 
-      // the circle
-      mousePerLine.append("circle")
-        .attr("r", 7)
-        .style("stroke", "black")
-        .style("fill", "none")
-        .style("stroke-width", "1px")
-        .style("opacity", "0");
-
-      // the text
-      mousePerLine.append("text")
-        .attr("transform", "translate(10,3)");
-
-      // rect to capture mouse movements
-      mouseG.append('svg:rect')
-        .attr('width', width)
-        .attr('height', height)
-        .attr('fill', 'none')
-        .attr('pointer-events', 'all')
-        .on('mouseout', function() { // on mouse out hide line, circles and text
-          d3.select(".mouse-line")
-            .style("opacity", "0");
-          d3.selectAll(".mouse-per-line circle")
-            .style("opacity", "0");
-          d3.selectAll(".mouse-per-line text")
-            .style("opacity", "0");
-        })
-        .on('mouseover', function() { // on mouse in show line, circles and text
-          d3.select(".mouse-line")
-            .style("opacity", "1");
-          d3.selectAll(".mouse-per-line circle")
-            .style("opacity", "1");
-          d3.selectAll(".mouse-per-line text")
-            .style("opacity", "1");
-        })
-        .on('mousemove', function() { // mouse moving over canvas
-          var mouse = d3.mouse(this);
-
-          // move the vertical line
-          d3.select(".mouse-line")
-            .attr("d", function() {
-              var d = "M" + mouse[0] + "," + height;
-              d += " " + mouse[0] + "," + 0;
-              return d;
-            });
-
-      // position the circle and text
-          d3.selectAll(".mouse-per-line")
-            .attr("transform", function(d, i) {
-              console.log(width/mouse[0])
-              var xDate = xScale.invert(mouse[0]),
-                  bisect = d3.bisector(function(d) { return d.time; }).right;
-                  idx = bisect(d.entrances, xDate);
-
-              var beginning = 0,
-                  end = lines[i].getTotalLength(),
-                  target = null;
-
-              while (true){
-                target = Math.floor((beginning + end) / 2);
-                pos = lines[i].getPointAtLength(target);
-                if ((target === end || target === beginning) && pos.x !== mouse[0]) {
-                    break;
-                }
-                if (pos.x > mouse[0])      end = target;
-                else if (pos.x < mouse[0]) beginning = target;
-                else break; //position found
-              }
-
-              // update the text with y value
-              d3.select(this).select('text')
-                .text(yScale.invert(pos.y).toFixed(2));
-
-              // return position
-              return "translate(" + mouse[0] + "," + pos.y +")";
-          });
-      });
+      function mousemove() {
+        var x0 = xScale.invert(d3.mouse(this)[0]),
+            i = bisectDate(data, x0, 1),
+            d0 = data[i - 1],
+            d1 = data[i],
+            d = x0 - d0.time > d1.time - x0 ? d1 : d0;
+        focus.attr("transform", "translate(" + x(d.time) + "," + y(d.close) + ")");
+        focus.select("text").text(d.entrances);
+      }
     }
 
   //set up lines and fill areas for each day
@@ -209,8 +140,7 @@ function drawChart(dayArray){
         .attr("width", 15)
         .attr("height", 15);
     })
-  }
-
+}
 
 function make_x_gridlines(scale) {   
     return d3.axisBottom(scale)
