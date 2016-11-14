@@ -30,15 +30,48 @@
 }
 
 
-.inc-details {
-  border: .5px solid black;
-  rx: 8;
-  fill: black;
-
-  text {
-    font: 15px sans-serif;
-  }
+.inc-details circle {
+    border: .5px solid black;
+    opacity: 1;
+    fill: white;
 }
+
+.inc-details text.entrances {
+      font: 18px sans-serif;
+      font-weight: bold;
+}
+
+.inc-details text.headcount, text.timestamp {
+      font: 12px sans-serif;
+}
+
+.inc-details rect {
+    fill: white;
+    stroke: black;
+    rx: 3px;
+    ry: 3px;
+
+}
+
+polyline {
+  fill: white;
+  stroke: black;
+  stroke-width: 1px;
+}
+
+.inc-details .pointer-bottom {
+  stroke: white;
+  stroke-width: 1.5px;
+  stroke-dasharray: initial;
+}
+
+.inc-details line {
+  stroke: black;
+  stroke-width: 1.5px;
+  stroke-dasharray: 3 3;
+}
+
+
 
 
 
