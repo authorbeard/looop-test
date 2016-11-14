@@ -39,6 +39,10 @@ function drawChart(dayArray){
 
     data.forEach(function(d){
       d.timestamp = new Date(d.timestamp)
+  debugger;
+      if (d.entrances < 0) {
+        return 0
+      }
     })
 
     var line = d3.line()
