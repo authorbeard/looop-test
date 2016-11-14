@@ -14,7 +14,7 @@ function fetchData(){
     var x = parseData(resp.data);
     drawChart(x)
     // drawChart(x[0].data)
-    debugger;
+    // debugger;
     // drawChart(parseData(resp.data));
   })
 
