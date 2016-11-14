@@ -10,7 +10,7 @@ function parseData(raw){
         var entrances=calcEntrances(increment);
         var headcount=increment[2].total_activity;
         day["data"].push(
-          {"time": timestamp,
+          {"timestamp": timestamp,
           "entrances": entrances,
           "headcount": headcount
           }

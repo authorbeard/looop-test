@@ -29,17 +29,15 @@
   font: 15px sans-serif;
 }
 
-div.tooltip { 
-    position: absolute;     
-    text-align: center;     
-    width: 60px;          
-    height: 28px;         
-    padding: 2px;       
-    font: 12px sans-serif;    
-    background: lightgrey; 
-    border: .5px solid black;    
-    border-radius: 8px;     
-    pointer-events: none;     
+
+.inc-details {
+  border: .5px solid black;
+  rx: 8;
+  fill: black;
+
+  text {
+    font: 15px sans-serif;
+  }
 }
 
 

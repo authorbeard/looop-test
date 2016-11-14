@@ -1,20 +1,24 @@
 
 function drawChart(dayArray){
-
+// debugger;
+//reversing so most recent data is drawn on top. 
   var raw = dayArray.reverse();
 //Setting variables to be used throughout
-    var fillParse=d3.timeFormat("%m%d%y")
+    var formatTime = d3.timeFormat("%H:%M")
+        fillParse=d3.timeFormat("%m%d%y")
         opParse=d3.timeFormat("%U")
-        isectDate = d3.bisector(function(d) { return d.time; }).left;
+        bisectDate = d3.bisector(function(d) { return d.timestamp; }).left;
 
     var chart = d3.select('.chart')    
         .attr("width", width)
         .attr("height", height)
         .attr("overflow", "visible");
 
-    var margin = {top: 20, right: 20, bottom: 40, left: 50},
+    var margin = {top: 50, right: 20, bottom: 40, left: 50},
         height = 500 - margin.top - margin.bottom,
-        width = 960 - margin.left - margin.right;        
+        width = 960 - margin.left - margin.right;  
+
+    var g = chart.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")")      
     
     var fillSelector = {
           "0": "#cecfd0",
@@ -22,24 +26,65 @@ function drawChart(dayArray){
         }
 
   raw.forEach(function (e, i, arry){
+// debugger;
     var data=e.data;
-    var g = chart.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")")
     
     var xScale = d3.scaleTime()
-      .domain(d3.extent(data, function(d){ return d.time }))
+      .domain(d3.extent(data, function(d){ return d.timestamp }))
       .rangeRound([0, width]);
 
     var yScale = d3.scaleLinear()
-      .domain(d3.extent(data, function(d){return d.entrances}))
+      // .domain(d3.extent(data, function(d){return d.entrances}))
+      .domain([0, d3.max(data, function(d){return d.entrances})])
       .rangeRound([height, 0]);
 
 //begin drawing/filling lines for each day    
 
     data.forEach(function(d){
-      d.time = new Date(d.time)
+      d.timestamp = new Date(d.timestamp)
     })
 
-    if (i==0){
+    //set up lines and fill areas for each day
+    var line = d3.line()
+      .curve(d3.curveCardinal)
+      .x(function(d) { return xScale(d.timestamp); })
+      .y(function(d) { return yScale(d.entrances); });
+
+    var area = d3.area()
+        .curve(d3.curveCardinal)
+        .x(function(d){ return xScale(d.timestamp)})
+        .y0(height)
+        .y1(function(d){ return yScale(d.entrances) });
+
+// adding lines & areas
+    g.append("path")
+        .data([data])
+        .attr("class", "line")
+        .attr("d", line);
+
+    g.append("path")
+        .data([data])
+        .attr("class", "area")
+        .attr("d", area)
+        .attr("style", "opacity: " + (i/3 + .3) + "; fill: " + fillSelector[i]);
+
+//adding data labels
+    chart.append("text")
+        .attr("class", "data-label")
+        .attr("transform", "translate(" + (width/2 + 100) + "," + i*30 + ")")
+        .attr("dy",".8em")
+        .text(e.name.toString());
+    
+    chart.append("rect")
+        .attr("class", "data-label")
+        .attr("transform", "translate(" + (width/2 + 75) + "," + i*30  + ")")
+        .attr("dy", ".35em")
+        .attr("style", "opacity: " + (i/3 + .3) + "; fill: " + fillSelector[i])
+        .attr("width", 15)
+        .attr("height", 15);
+
+//// AXES AND MOUSEOVER FOR MOST RECENT DATA //
+    if (i==1){
       g.append("g")
           .attr("class", "axis x")
           .attr("transform", "translate(0," + height + ")")
@@ -61,85 +106,56 @@ function drawChart(dayArray){
           .attr("style", "font-size: 18")
           .text("Entrances");
 
-      var focus = chart.append("g")
+      var x_gridlines = make_x_gridlines(xScale);
+      g.append("g")     
+        .attr("class", "grid")
+        .attr("transform", "translate(0," + height + ")")
+        .call(x_gridlines
+            .tickSize(-height)
+            .tickFormat("")
+        )
+/// HANDLING MOUSEOVER//
+      var focus = g.append("g")
           .attr("class", "focus")
-          .style("display", "none");
+          .style("display", "none")
 
       focus.append("circle")
-          .attr("r", 4.5);
+          .attr("class", "inc-details y")
+          .attr("r", 4.5)
+          .style("stroke, blue");
 
-      focus.append("text")
-          .attr("x", 9)
-          .attr("dy", ".35em");
+      focus.append("rect")
+          .attr("x", height + margin.top + margin.bottom)
+          .attr("dy", ".35em")
+          .style("fill", "black");
 
-      g.append("rect")
+      chart.append("rect")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
           .attr("class", "overlay")
           .attr("fill", "none")
           .attr("width", width)
           .attr("height", height)
+          .style("pointer-events", "all")
           .on("mouseover", function() { focus.style("display", null); })
           .on("mouseout", function() { focus.style("display", "none"); })
           .on("mousemove", mousemove);
 
       function mousemove() {
+        console.log("mousemove")
         var x0 = xScale.invert(d3.mouse(this)[0]),
             i = bisectDate(data, x0, 1),
             d0 = data[i - 1],
             d1 = data[i],
-            d = x0 - d0.time > d1.time - x0 ? d1 : d0;
-        focus.attr("transform", "translate(" + x(d.time) + "," + y(d.close) + ")");
-        focus.select("text").text(d.entrances);
+            d = x0 - d0.timestamp > d1.timestamp - x0 ? d1 : d0;
+  // debugger;
+        console.log("entrances: " + d.entrances)
+        focus.select("circle").text(formatTime(d.timestamp) + ": " + d.entrances)
+            .attr("transform", "translate(" + (xScale(d.timestamp)) + "," + (yScale(d.entrances)) + ")");
+        
       }
-    }
+    } //<-- end of this-week-only 
 
-  //set up lines and fill areas for each day
-    var line = d3.line()
-      .curve(d3.curveBasis)
-      .x(function(d) { return xScale(d.time); })
-      .y(function(d) { return yScale(d.entrances); });
-
-    var area = d3.area()
-        .curve(d3.curveBasis)
-        .x(function(d){ return xScale(d.time)})
-        .y0(height)
-        .y1(function(d){ return yScale(d.entrances) });
-
-    var x_gridlines = make_x_gridlines(xScale);
-    g.append("g")     
-      .attr("class", "grid")
-      .attr("transform", "translate(0," + height + ")")
-      .call(x_gridlines
-          .tickSize(-height)
-          .tickFormat("")
-      )
-
-// adding lines & areas
-    g.append("path")
-        .data([data])
-        .attr("class", "line")
-        .attr("d", line);
-
-    g.append("path")
-        .data([data])
-        .attr("class", "area")
-        .attr("d", area)
-        .attr("style", "opacity: " + (i/3 + .3) + "; fill: " + fillSelector[i]);
-
-//adding data labels
-    chart.append("text")
-        .attr("class", "data-label")
-        .attr("transform", "translate(" + (width/2 + 100) + "," + (i*margin.top +20) + ")")
-        .attr("dy",".8em")
-        .text(e.name.toString());
-    
-    chart.append("rect")
-        .attr("class", "data-label")
-        .attr("transform", "translate(" + (width/2 + 75) + "," + (i*margin.top +20) + ")")
-        .attr("dy", ".35em")
-        .attr("style", "opacity: " + (i/3 + .3) + "; fill: " + fillSelector[i])
-        .attr("width", 15)
-        .attr("height", 15);
-    })
+  })
 }
 
 function make_x_gridlines(scale) {   

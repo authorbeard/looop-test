@@ -19,7 +19,7 @@ function generateDay(dayObject){
     var increment = {
       "id": null, 
       "fw_count": e,
-      "t": new Date(dayObject.getTime() + (i*300000)).getTime(),
+      "t": new Date(dayObject.getTime() + 300000 + (i*300000)).getTime(),
       "total_activity": totAct,
     } 
     day.push(increment);   
